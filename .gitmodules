@@ -1,0 +1,3 @@
+[submodule "flare_euclid_paper"]
+	path = flare_euclid_paper
+	url = https://github.com/stephenmwilkins/flare_euclid_paper
