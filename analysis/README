@@ -1,0 +1,6 @@
+
+
+
+basic/N.py - the number of galaxies simulated by FLARES/EAGLE. Should be first plot to appear demonstrating the power of FLARES over EAGLE.
+
+properties/properties.py - can be used to correlate any property against H-band flux.
