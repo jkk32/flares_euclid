@@ -40,7 +40,7 @@ df = pd.read_csv('/cosma/home/dp004/dc-wilk2/data/flare/modules/flares/weight_fi
 weights = np.array(df['weights'])
 
 
-for property in ['SFR_inst_30']:
+for property in ['SFR_inst_30', 'SFR/SFR_10', 'SFR/SFR_100', 'Mstar_30']:
 
     Y = fl.load_dataset(property, arr_type='Galaxy') # SFR
 
