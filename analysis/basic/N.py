@@ -23,7 +23,7 @@ cmap = mpl.cm.viridis
 norm = mpl.colors.Normalize(vmin=np.min(deltas), vmax=np.max(deltas))
 
 
-fig = plt.figure(figsize=(3,3))
+fig = plt.figure(figsize=(3.5,3.5))
 
 left  = 0.2
 bottom = 0.15
@@ -81,7 +81,7 @@ for tag in eagle.tags:
     N_EAGLE.append(N)
     print(tag, N)
 
-ax.plot(eagle.zeds, np.log10(np.cumsum(N_EAGLE)), c='0.5', label = 'EAGLE', ls= '--')
+ax.plot(eagle.zeds, np.log10(np.cumsum(N_EAGLE)), c='0.5', label = 'EAGLE REF', ls= '--')
 
 
 
@@ -91,11 +91,12 @@ ax.plot(eagle.zeds, np.log10(np.cumsum(N_EAGLE)), c='0.5', label = 'EAGLE', ls= 
 cbar_ax = fig.add_axes((left, bottom+height, width, 0.025))
 cbar = mpl.colorbar.ColorbarBase(cbar_ax, cmap=cmap, norm=norm, orientation='horizontal')
 cbar.set_label(r'$\rm \delta$')
+cbar.ax.tick_params(labelsize=5)
 cbar_ax.xaxis.set_ticks_position('top')
 cbar_ax.xaxis.set_label_position('top')
 
 
-ax.legend()
+ax.legend(fontsize = 7)
 
 ax.set_xlabel(r'$\rm z$')
 ax.set_ylabel(r'$\rm log_{10}(N(>z))$')
