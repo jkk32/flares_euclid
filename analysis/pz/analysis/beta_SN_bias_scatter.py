@@ -20,23 +20,23 @@ pz = h5py.File('../../../data2/beta_pz.hdf5', 'r')
 SN = pz['obs/Euclid.NISP.H/flux'][:]/pz['obs/Euclid.NISP.H/error'][:]
 beta = input['beta'][:]
 
-s = (SN>5)
+s = beta<0
 
 z_input = input['z'][s]
 z_EAZY = pz['EAZY/z_m1'][s]
 dz = z_EAZY - z_input
-beta = beta[s]
+SN = SN[s]
 
 
-br = [-3, 2]
-beta_binw = 0.5
-beta_bins = np.arange(br[0]+beta_binw/2., br[1], beta_binw) # really bin centres
+snr = [0, 2]
+sn_binw = 0.25
+sn_bins = np.arange(snr[0]+sn_binw/2., snr[1], sn_binw) # really bin centres
 
 zr = [5, 12]
 z_binw = 0.5
 z_bins = np.arange(zr[0]+z_binw/2., zr[1], z_binw) # really bin centres
 
-ar = len(beta_bins)/len(z_bins)
+ar = len(sn_bins)/len(z_bins)
 
 print(ar)
 
@@ -75,15 +75,16 @@ cbar_space = 0.15 # space needed by cbar, not
 fig = plt.figure(figsize = (3, 3*(ar/width)))
 
 ax = fig.add_axes((left, bottom, width, height))
-met = np.zeros((len(beta_bins), len(z_bins)))
+met = np.zeros((len(sn_bins), len(z_bins)))
 
-for j,beta_bin in enumerate(beta_bins):
-    sel = np.fabs(beta-beta_bin)<beta_binw/2
+for j,sn_bin in enumerate(sn_bins):
+    sel = np.fabs(np.log10(SN)-sn_bin)<sn_binw/2
     dz = z_EAZY[sel] - z_input[sel]
     met[j,:] = np.array([np.median(dz[(np.fabs(z_input[sel]-z)<z_binw/2)]) for z in z_bins])
 
+
 met = np.flip(met, axis=0)
-ax.imshow(met, vmin=vmin, vmax=vmax, cmap = cmap, aspect = 'auto', extent = [*zr, *br])
+ax.imshow(met, vmin=vmin, vmax=vmax, cmap = cmap, aspect = 'auto', extent = [*zr, *snr])
 
 
 cbar_ax = fig.add_axes((left, bottom+height, width, 0.025))
@@ -94,9 +95,9 @@ cbar_ax.xaxis.set_ticks_position('top')
 cbar_ax.xaxis.set_label_position('top')
 
 ax.set_xlabel(r'$\rm z$')
-ax.set_ylabel(r'$\rm \beta$')
+ax.set_ylabel(r'$\rm S/N(H)$')
 
-fig.savefig(f'figures/beta_bias.pdf')
+fig.savefig(f'figures/beta_SN_bias.pdf')
 fig.clf()
 
 
@@ -118,15 +119,15 @@ cbar_space = 0.15 # space needed by cbar, not
 fig = plt.figure(figsize = (3, 3*(ar/width)))
 
 ax = fig.add_axes((left, bottom, width, height))
-met = np.zeros((len(beta_bins), len(z_bins)))
+met = np.zeros((len(sn_bins), len(z_bins)))
 
-for j,beta_bin in enumerate(beta_bins):
-    sel = np.fabs(beta-beta_bin)<beta_binw/2
+for j,sn_bin in enumerate(sn_bins):
+    sel = np.fabs(np.log10(SN)-sn_bin)<sn_binw/2
     dz = z_EAZY[sel] - z_input[sel]
     met[j,:] = np.array([np.percentile(dz[(np.fabs(z_input[sel]-(z+0.5))<0.5)], 84.) - np.percentile(dz[(np.fabs(z_input[sel]-(z+0.5))<0.5)], 16.) for z in z_bins])
 
 met = np.flip(met, axis=0)
-ax.imshow(met, vmin=vmin, vmax=vmax, cmap = cmap, aspect = 'auto', extent = [*zr, *br])
+ax.imshow(met, vmin=vmin, vmax=vmax, cmap = cmap, aspect = 'auto', extent = [*zr, *snr])
 
 
 cbar_ax = fig.add_axes((left, bottom+height, width, 0.025))
@@ -136,8 +137,11 @@ cbar.ax.tick_params(labelsize=5)
 cbar_ax.xaxis.set_ticks_position('top')
 cbar_ax.xaxis.set_label_position('top')
 
-ax.set_xlabel(r'$\rm z$')
-ax.set_ylabel(r'$\rm \beta$')
 
-fig.savefig(f'figures/beta_scatter.pdf')
+
+
+ax.set_xlabel(r'$\rm z$')
+ax.set_ylabel(r'$\rm S/N(H)$')
+
+fig.savefig(f'figures/beta_SN_scatter.pdf')
 fig.clf()
