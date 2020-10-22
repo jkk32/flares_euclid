@@ -35,7 +35,7 @@ halo = fl.halos
 # -- CREATE A LOOP OVER PARAMETERS OF INTEREST
 
 
-df = pd.read_csv('/cosma/home/dp004/dc-wilk2/data/flare/modules/flares/weight_files/weights_grid.txt')
+df = pd.read_csv('../../../flares/weight_files/weights_grid.txt')
 weights = np.array(df['weights'])
 
 
@@ -90,8 +90,8 @@ for j, phot_type in enumerate(phot_types):
 
 
 
-        c1 = -2.5*np.log10(l['Euclid/NISP/H']/l['Spitzer/IRAC/ch1'])
-        c2 = -2.5*np.log10(l['Spitzer/IRAC/ch1']/l['Spitzer/IRAC/ch2'])
+        c1 = -2.5*np.log10(l['Spitzer/IRAC/ch1']/l['Spitzer/IRAC/ch2'])
+        c2 = -2.5 * np.log10(l['Euclid/NISP/H'] / l['Spitzer/IRAC/ch1'])
 
         s = h>10**plot_flux_limit # dust attenuated luminosity
         # ws = ws[s]

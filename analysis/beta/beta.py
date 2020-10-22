@@ -28,7 +28,7 @@ norm = mpl.colors.Normalize(vmin=9., vmax=11.)
 
 # --- used to define lower x-limit
 
-plot_flux_limit = 1. # log10(nJy)
+plot_flux_limit = 2. # log10(nJy)
 print(f'log10(flux_limit/nJy): {plot_flux_limit}')
 
 
@@ -188,7 +188,7 @@ for j, phot_type in enumerate(phot_types):
 
     axes[0, j].text(0.5, 1.05, phot_labels[j], ha = 'center', va = 'baseline', transform=axes[0, j].transAxes)
 
-plt.xlim(1)
+plt.xlim(plot_flux_limit)
 
 fig.text(0.01, 0.5, r'$\rm \beta$', ha = 'left', va = 'center', rotation = 'vertical')
 #fig.text(0.5,0.01, r'$\rm \log_{10}(L_{NUV} \; / \; erg \; s^{-1})$', ha = 'center', va = 'bottom')
@@ -201,7 +201,7 @@ fig.text(0.5,0.07, r'$\rm \log_{10}(f_{H} \; / \; nJy)$', ha = 'center', va = 'b
 #
 
 
-fig.savefig(f'figures/beta_rest_FUV_NUV__H__deeper.pdf', bbox_inches="tight")
+fig.savefig(f'figures/paper/beta_all.pdf', bbox_inches="tight")
 fig.clf()
 
 
@@ -242,7 +242,7 @@ fig.savefig(f'figures/beta_summary.pdf')
 fig.clf()
 '''
 
-fig = plt.figure(figsize=(4,6))
+fig = plt.figure(figsize=(5,6))
 
 for z in beta_summary.keys():
     if z == '5.0' or z == '7.0' or z == '9.0':
@@ -256,18 +256,18 @@ plt.plot([0.], [0.], c='k', linestyle='--', alpha=0.4, label='stellar + nebular'
 plt.plot([0.], [0.], c='k', linestyle='dashdot', alpha=0.4, label='stellar')
 
 
-plt.ylim(-2.85, -1.85)
-plt.xlim(1.0, 2.8)
+plt.ylim(-2.65, -1.85)
+plt.xlim(plot_flux_limit, 2.7)
 plt.ylabel(r'$\rm \beta$')
 plt.xlabel(r'$\rm \log_{10}(f_{H} \; / \; nJy)$')
 
-plt.legend(loc='upper left')
+plt.legend(loc='best', fontsize=8)
 
-fig.savefig(f'figures/beta_summary_V3_deeper.pdf', bbox_inches="tight")
+fig.savefig(f'figures/paper/beta_summary.pdf', bbox_inches="tight")
 fig.clf()
 
-
+'''
 import _pickle as pickle
 
 pickle.dump(beta_all, open('beta_all.p', 'wb'))
-
+'''
