@@ -52,6 +52,7 @@ H = fl.load_dataset('H', arr_type=f'Galaxy/BPASS_2.2.1/Chabrier300/Flux/DustMode
 
 
 phot_types = ['Pure_Stellar','Intrinsic', 'DustModelI']
+phot_labels = ['Stellar', 'Stellar + Nebular', 'Stellar + Nebular + Dust']
 
 for j, phot_type in enumerate(phot_types):
 
@@ -97,11 +98,14 @@ for j, phot_type in enumerate(phot_types):
 
         ax = axes[i, j]
 
-        ax.scatter(c1[s], c2[s], c = norm(mstar[s]), s=2, alpha=0.25)
+        ax.hexbin(c1[s], c2[s], gridsize=50, extent=[-0.5, 0.8, -0.5, 2.4], norm=mpl.cm.colors.LogNorm(vmin=1, vmax=400),
+                  cmap=mpl.cm.Greys, linewidths=0.1)
+
+        #ax.scatter(c1[s], c2[s], c = norm(mstar[s]), s=2, alpha=0.25)
 
         if j==0: axes[i, 0].text(0.05, 0.9, rf'$\rm z={z:.0f}$', ha = 'left', va = 'baseline', transform=axes[i, 0].transAxes)
 
-    axes[0, j].text(0.5, 1.05, phot_type, ha = 'center', va = 'baseline', transform=axes[0, j].transAxes)
+    axes[0, j].text(0.5, 1.05, phot_labels[j], ha = 'center', va = 'baseline', transform=axes[0, j].transAxes)
 
 
 
@@ -116,5 +120,5 @@ fig.text(0.5,0.01, 'NUV-V', ha = 'center', va = 'bottom')
 #
 
 
-fig.savefig(f'figures/colours_rest_FUV_NUV_V.pdf')
+fig.savefig(f'figures/paper/colours_rest_FUV_NUV_V.pdf')
 fig.clf()

@@ -152,7 +152,7 @@ for j, phot_type in enumerate(phot_types):
 
         ax = axes[i, j]
 
-        cmap = mpl.cm.colors.Colormap('Greys', N=256)
+        #cmap = mpl.cm.colors.Colormap('Greys', N=256)
 
         vmin = np.log10(1.)
         vmax = np.log10(1000.)
@@ -202,7 +202,7 @@ for j, phot_type in enumerate(phot_types):
     axes[0, j].text(0.5, 1.05, phot_labels[j], ha = 'center', va = 'baseline', transform=axes[0, j].transAxes)
 
 plt.ylim(-2.80, -1.25)
-plt.xlim(plot_flux_limit, 3.59)
+plt.xlim(plot_flux_limit, 3.75)
 
 fig.text(0.01, 0.5, r'$\rm \beta$', ha = 'left', va = 'center', rotation = 'vertical')
 #fig.text(0.5,0.01, r'$\rm \log_{10}(L_{NUV} \; / \; erg \; s^{-1})$', ha = 'center', va = 'bottom')
@@ -215,7 +215,7 @@ fig.text(0.5,0.07, r'$\rm \log_{10}(f_{H} \; / \; nJy)$', ha = 'center', va = 'b
 #
 
 
-fig.savefig(f'figures/paper/beta_all_v3.pdf', bbox_inches="tight")
+fig.savefig(f'figures/talk/beta_all.pdf', bbox_inches="tight")
 fig.clf()
 
 
@@ -255,35 +255,59 @@ plt.xlabel(r'$\rm \log_{10}(f_{H} \; / \; nJy)$')
 fig.savefig(f'figures/beta_summary.pdf')
 fig.clf()
 '''
+cmap = mpl.cm.plasma
+norm = mpl.colors.Normalize(vmin=5., vmax=10.)
 
-fig = plt.figure(figsize=(4,5))
+fig = plt.figure(figsize=(3,5))
+
+left  = 0.15
+bottom = 0.1
+height = 0.65
+width = 0.95
+
+ax = fig.add_axes((left, bottom, width, height))
+
+bottom  += height
+height = 0.2
+axH = fig.add_axes((left, bottom, width, height))
+
+
 
 #plt.axvline(euclid_flux_limit_1, color='k', ls='dotted', alpha=0.3)
 #plt.axvline(euclid_flux_limit_2, color='k', ls='dashdot', alpha=0.3)
 #plt.axvline(euclid_flux_limit_3, color='k', ls='dashed', alpha=0.3)
-plt.axvline(euclid_deep_flux_limit, color='k', alpha=0.3, linewidth=5)
+ax.axvline(euclid_deep_flux_limit, color='k', alpha=0.3, linewidth=2)
+axH.axvline(euclid_deep_flux_limit, color='k', alpha=0.3, linewidth=2)
 
 for z in beta_summary.keys():
     if z == '5.0' or z == '7.0' or z == '9.0':
-        plt.plot(beta_summary[z]['log10H'], beta_summary[z]['beta'], '-', linewidth=2, c=cmap(norm(z)), alpha=0.8) #cmap(1.5*(float(z) - 5) / 10)
-        plt.plot([0.], [0.], '-', linewidth=2, c=cmap(1.5*(float(z) - 5) / 10), alpha = 0.6, label = f'z = {int(float(z))}')
-        plt.plot(beta_summary[z]['log10H'], beta_nebular[z]['beta'], '--', linewidth=2, c=cmap(norm(z)), alpha=0.8)
-        plt.plot(beta_summary[z]['log10H'], beta_stellar[z]['beta'], linestyle='dashdot', linewidth=2, c=cmap(norm(z)), alpha=0.8)
+        ax.plot(beta_summary[z]['log10H'], beta_summary[z]['beta'], '-', linewidth=2, c=cmap(norm(float(z))), alpha=0.8) #cmap(1.5*(float(z) - 5) / 10)
+        ax.plot([0.], [0.], '-', linewidth=2, c=cmap(norm(float(z))), alpha = 0.6, label = f'z = {int(float(z))}')
+        ax.plot(beta_summary[z]['log10H'], beta_nebular[z]['beta'], '--', linewidth=2, c=cmap(norm(float(z))), alpha=0.8)
+        ax.plot(beta_summary[z]['log10H'], beta_stellar[z]['beta'], linestyle='dashdot', linewidth=2, c=cmap(norm(float(z))), alpha=0.8)
+        axH.plot(beta_summary[z]['log10H'], np.array(beta_nebular[z]['beta'])-np.array(beta_stellar[z]['beta']), linestyle='dotted',
+                 linewidth=2, c=cmap(norm(float(z))), alpha=0.8)
+        axH.plot(beta_summary[z]['log10H'], np.array(beta_summary[z]['beta']) - np.array(beta_nebular[z]['beta']), linestyle='solid', linewidth=2, c=cmap(norm(float(z))), alpha=0.8)
 
 
-plt.plot([0.], [0.], c='k', linestyle='-', linewidth=1, alpha=0.4, label='stellar + nebular + dust')
-plt.plot([0.], [0.], c='k', linestyle='--', linewidth=1, alpha=0.4, label='stellar + nebular')
-plt.plot([0.], [0.], c='k', linestyle='dashdot', linewidth=1, alpha=0.4, label='stellar')
+ax.plot([0.], [0.], c='k', linestyle='-', linewidth=1, alpha=0.4, label='stellar + nebular + dust')
+ax.plot([0.], [0.], c='k', linestyle='--', linewidth=1, alpha=0.4, label='stellar + nebular')
+ax.plot([0.], [0.], c='k', linestyle='dashdot', linewidth=1, alpha=0.4, label='stellar')
 
 
-plt.ylim(-2.65, -1.8)
-plt.xlim(1.5, 2.8)
-plt.ylabel(r'$\rm \beta$')
-plt.xlabel(r'$\rm \log_{10}(f_{H} \; / \; nJy)$')
+ax.set_ylim(-2.65, -1.82)
+ax.set_xlim(1.5, 2.8)
+ax.set_ylabel(r'$\rm \beta$')
 
-plt.legend(loc=(0.26, 0.3), fontsize=8)
+ax.set_xlabel(r'$\rm \log_{10}(f_{H} \; / \; nJy)$')
+axH.set_ylabel(r'$\rm \Delta \beta$')
 
-fig.savefig(f'figures/talk/beta_summary.pdf', bbox_inches="tight")
+axH.set_xlim(1.5, 2.8)
+axH.get_xaxis().set_ticks([])
+
+ax.legend(loc=(0.27, 0.31), fontsize=8)
+
+fig.savefig(f'figures/talk/beta_summary2.pdf', bbox_inches="tight")
 fig.clf()
 
 '''
