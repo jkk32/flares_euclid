@@ -36,22 +36,22 @@ halo = fl.halos
 
 H = fl.load_dataset('H', arr_type='Galaxy/BPASS_2.2.1/Chabrier300/Flux/DustModelI/Euclid/NISP') # M_sol/yr
 
-df = pd.read_csv('/cosma/home/dp004/dc-wilk2/data/flare/modules/flares/weight_files/weights_grid.txt')
+df = pd.read_csv('../../../flares/weight_files/weights_grid.txt')
 weights = np.array(df['weights'])
 
 
 
-properties = ['SFR_inst_30', 'SFR/SFR_10', 'SFR/SFR_100', 'Mstar_30']
-properties = ['G_Z', 'S_Z', 'S_Age']
+properties = ['SFR_inst_30', 'SFR/SFR_10', 'SFR/SFR_100', 'Mstar_30','G_Z', 'S_Z', 'S_Age']
+#properties = ['G_Z', 'S_Z', 'S_Age']
 labels = {}
 
-labels['SFR_inst_30'] = r'$\rm log_{10}(SFR_{i}/M_{\odot} yr^{-1})$'
-labels['SFR/SFR_10'] = r'$\rm log_{10}(SFR_{10}/M_{\odot} yr^{-1})$'
-labels['SFR/SFR_100'] = r'$\rm log_{10}(SFR_{100}/M_{\odot} yr^{-1})$'
-labels['Mstar_30'] = r'$\rm log_{10}(M^{\star}/M_{\odot})$'
-labels['G_Z'] = r'$\rm log_{10}(<Z_{gas}>)$'
-labels['S_Z'] = r'$\rm log_{10}(<Z_{\star}>)$'
-labels['S_Age'] = r'$\rm log_{10}(<age_{\star}/Myr>)$'
+labels['SFR_inst_30'] = r'$\rm log_{10}[SFR_{i}\;/\;M_{\odot} \;yr^{-1}]$'
+labels['SFR/SFR_10'] = r'$\rm log_{10}[SFR_{10}\;/\;M_{\odot} \;yr^{-1}]$'
+labels['SFR/SFR_100'] = r'$\rm log_{10}[SFR_{100}\;/\;M_{\odot} \;yr^{-1}]$'
+labels['Mstar_30'] = r'$\rm log_{10}[M^{\star}\;/\;M_{\odot}]$'
+labels['G_Z'] = r'$\rm log_{10}[<Z_{gas}>]$'
+labels['S_Z'] = r'$\rm log_{10}[<Z_{\star}>]$'
+labels['S_Age'] = r'$\rm log_{10}[<age_{\star}\;/\;Myr>]$'
 
 for property in properties:
 
@@ -129,15 +129,16 @@ for property in properties:
     ax.set_xlim([2., 4.])
 
     ax.axvline(np.log10(photom.m_to_flux(26.)), lw=3, c='k', alpha=0.3)
+    ax.axvline(np.log10(photom.m_to_flux(25.3)), linestyle='dashed', lw=3, c='k', alpha=0.3)
 
     # ax.plot([2.0,4.0],[0.5, 2.5], lw=1, c='k', alpha=0.2)
 
-    ax.set_xlabel(r'$\rm log_{10}(f_{H}/nJy)$')
+    ax.set_xlabel(r'$\rm log_{10}[f_{H}\;/\;nJy]$')
 
 
     label = labels[property]
     ax.set_ylabel(label)
 
 
-    fig.savefig(f'figures/zevo_{property.replace("/","_")}.pdf')
+    fig.savefig(f'figures/talk/zevo_{property.replace("/","_")}.pdf')
     fig.clf()

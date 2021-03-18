@@ -33,6 +33,7 @@ norm = mpl.colors.Normalize(vmin=5., vmax=10.)
 
 plot_flux_limit = 1.5 # log10(nJy)
 euclid_deep_flux_limit = np.log10(photom.m_to_flux(26.))
+euclid_deep_flux_limit_10s = np.log10(photom.m_to_flux(25.3))
 euclid_flux_limit_1 = np.log10(275)
 euclid_flux_limit_2 = np.log10(363)
 euclid_flux_limit_3 = np.log10(479)
@@ -166,24 +167,35 @@ for j, phot_type in enumerate(phot_types):
         beta_84 = []
         beta_16 = []
         bin_centres = []
+        beta_spline_lessthan10 = []
+        beta_spline_lessthan10_bins = []
+        beta_all_summary = []
+        beta_all_summary_bins = []
         for bin in bin_edges[:-1]:
             try:
                 sd = abs(c1[s] - (bin + dh_bin/2)) < dh_bin
-                beta_spine.append(np.percentile(c2[s][sd], 50))
-                beta_84.append(np.percentile(c2[s][sd], 84))
-                beta_16.append(np.percentile(c2[s][sd], 16))
-                bin_centres.append(bin + dh_bin/2)
+                beta_all_summary.append(np.percentile(c2[s][sd], 50))
+                beta_all_summary_bins.append(bin + dh_bin / 2)
+                if np.sum(sd) > 5:
+                    beta_spine.append(np.percentile(c2[s][sd], 50))
+                    beta_84.append(np.percentile(c2[s][sd], 84))
+                    beta_16.append(np.percentile(c2[s][sd], 16))
+                    bin_centres.append(bin + dh_bin/2)
+                else:
+                    beta_spline_lessthan10.append(np.percentile(c2[s][sd], 50))
+                    beta_spline_lessthan10_bins.append(bin + dh_bin / 2)
+
             except:
                 continue
 
         if phot_type == 'DustModelI':
-            beta_summary[str(z)] = {'beta': beta_spine, 'log10H': bin_centres}
+            beta_summary[str(z)] = {'beta': beta_all_summary, 'log10H': beta_all_summary_bins}
 
         if phot_type == 'Pure_Stellar':
-            beta_stellar[str(z)] = {'beta': beta_spine, 'log10H': bin_centres}
+            beta_stellar[str(z)] = {'beta': beta_all_summary, 'log10H': beta_all_summary_bins}
 
         if phot_type == 'Intrinsic':
-            beta_nebular[str(z)] = {'beta': beta_spine, 'log10H': bin_centres}
+            beta_nebular[str(z)] = {'beta': beta_all_summary, 'log10H': beta_all_summary_bins}
 
         ax.axhline(-2, color='k', ls='-', alpha=0.3)
 
@@ -191,8 +203,11 @@ for j, phot_type in enumerate(phot_types):
         #ax.axvline(euclid_flux_limit_2, color='k', ls='dashdot', alpha=0.3)
         #ax.axvline(euclid_flux_limit_3, color='k', ls='dashed', alpha=0.3)
         ax.axvline(euclid_deep_flux_limit, color='k', alpha=0.3)
+        ax.axvline(euclid_deep_flux_limit_10s, linestyle='dashed', color='k', alpha=0.3)
 
         ax.axhline(np.median(c2[s2]), color='r', ls='--', alpha=0.3)
+
+        ax.plot(beta_spline_lessthan10_bins, beta_spline_lessthan10, '--', color=cmap(norm(z)), alpha=0.3)
 
         ax.fill_between(bin_centres, beta_16, beta_84, color=cmap(norm(z)), alpha=0.3)
         ax.plot(bin_centres, beta_spine, c=cmap(norm(z)), alpha=0.3)
@@ -215,7 +230,7 @@ fig.text(0.5,0.07, r'$\rm \log_{10}(f_{H} \; / \; nJy)$', ha = 'center', va = 'b
 #
 
 
-fig.savefig(f'figures/talk/beta_all.pdf', bbox_inches="tight")
+fig.savefig(f'figures/paper/beta_all_test.pdf', bbox_inches="tight")
 fig.clf()
 
 
@@ -258,7 +273,7 @@ fig.clf()
 cmap = mpl.cm.plasma
 norm = mpl.colors.Normalize(vmin=5., vmax=10.)
 
-fig = plt.figure(figsize=(3,5))
+fig = plt.figure(figsize=(2.,4))
 
 left  = 0.15
 bottom = 0.1
@@ -278,36 +293,39 @@ axH = fig.add_axes((left, bottom, width, height))
 #plt.axvline(euclid_flux_limit_3, color='k', ls='dashed', alpha=0.3)
 ax.axvline(euclid_deep_flux_limit, color='k', alpha=0.3, linewidth=2)
 axH.axvline(euclid_deep_flux_limit, color='k', alpha=0.3, linewidth=2)
+ax.axvline(euclid_deep_flux_limit_10s, linestyle='dashed', color='k', alpha=0.3, linewidth=2)
+axH.axvline(euclid_deep_flux_limit_10s, linestyle='dashed', color='k', alpha=0.3, linewidth=2)
 
 for z in beta_summary.keys():
     if z == '5.0' or z == '7.0' or z == '9.0':
-        ax.plot(beta_summary[z]['log10H'], beta_summary[z]['beta'], '-', linewidth=2, c=cmap(norm(float(z))), alpha=0.8) #cmap(1.5*(float(z) - 5) / 10)
-        ax.plot([0.], [0.], '-', linewidth=2, c=cmap(norm(float(z))), alpha = 0.6, label = f'z = {int(float(z))}')
-        ax.plot(beta_summary[z]['log10H'], beta_nebular[z]['beta'], '--', linewidth=2, c=cmap(norm(float(z))), alpha=0.8)
-        ax.plot(beta_summary[z]['log10H'], beta_stellar[z]['beta'], linestyle='dashdot', linewidth=2, c=cmap(norm(float(z))), alpha=0.8)
+        ax.plot(beta_summary[z]['log10H'], beta_summary[z]['beta'], '-', linewidth=1, c=cmap(norm(float(z))), alpha=0.99) #cmap(1.5*(float(z) - 5) / 10)
+        ax.plot([0.], [0.], '-', linewidth=1, c=cmap(norm(float(z))), alpha = 0.99, label = f'z = {int(float(z))}')
+        ax.plot(beta_summary[z]['log10H'], beta_nebular[z]['beta'], '--', linewidth=1, c=cmap(norm(float(z))), alpha=0.99)
+        ax.plot(beta_summary[z]['log10H'], beta_stellar[z]['beta'], linestyle='dashdot', linewidth=1, c=cmap(norm(float(z))), alpha=0.99)
         axH.plot(beta_summary[z]['log10H'], np.array(beta_nebular[z]['beta'])-np.array(beta_stellar[z]['beta']), linestyle='dotted',
-                 linewidth=2, c=cmap(norm(float(z))), alpha=0.8)
-        axH.plot(beta_summary[z]['log10H'], np.array(beta_summary[z]['beta']) - np.array(beta_nebular[z]['beta']), linestyle='solid', linewidth=2, c=cmap(norm(float(z))), alpha=0.8)
+                 linewidth=1, c=cmap(norm(float(z))), alpha=0.99)
+        axH.plot(beta_summary[z]['log10H'], np.array(beta_summary[z]['beta']) - np.array(beta_nebular[z]['beta']), linestyle='solid', linewidth=1, c=cmap(norm(float(z))), alpha=0.99)
 
 
-ax.plot([0.], [0.], c='k', linestyle='-', linewidth=1, alpha=0.4, label='stellar + nebular + dust')
-ax.plot([0.], [0.], c='k', linestyle='--', linewidth=1, alpha=0.4, label='stellar + nebular')
-ax.plot([0.], [0.], c='k', linestyle='dashdot', linewidth=1, alpha=0.4, label='stellar')
+ax.plot([0.], [0.], c='k', linestyle='-', linewidth=1, alpha=0.6, label='stellar + nebular + dust')
+ax.plot([0.], [0.], c='k', linestyle='--', linewidth=1, alpha=0.6, label='stellar + nebular')
+ax.plot([0.], [0.], c='k', linestyle='dashdot', linewidth=1, alpha=0.6, label='stellar')
 
 
 ax.set_ylim(-2.65, -1.82)
-ax.set_xlim(1.5, 2.8)
+ax.set_xlim(2, 3)
 ax.set_ylabel(r'$\rm \beta$')
 
-ax.set_xlabel(r'$\rm \log_{10}(f_{H} \; / \; nJy)$')
+ax.set_xlabel(r'$\rm \log_{10}[f_{H} \; / \; nJy]$')
 axH.set_ylabel(r'$\rm \Delta \beta$')
 
-axH.set_xlim(1.5, 2.8)
+axH.set_xlim(2, 3)
 axH.get_xaxis().set_ticks([])
 
-ax.legend(loc=(0.27, 0.31), fontsize=8)
+ax.legend(loc=(0.23, 0.43), fontsize=6)
+#ax.legend(loc='best', fontsize=6)
 
-fig.savefig(f'figures/talk/beta_summary2.pdf', bbox_inches="tight")
+fig.savefig(f'figures/talk/beta_summary_v7.pdf', bbox_inches="tight")
 fig.clf()
 
 '''
